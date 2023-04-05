@@ -1,0 +1,1 @@
+const HOST_NAME = "https://e982-46-216-228-38.eu.ngrok.io";
