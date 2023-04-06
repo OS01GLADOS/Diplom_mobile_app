@@ -17,7 +17,7 @@ retrieve_roles_me() async{
     },
   );
 
-  final responseJson = jsonDecode(response.body);
+  final responseJson = jsonDecode(utf8.decode(response.bodyBytes));
   RetrieveRoles UserRole = RetrieveRoles.fromJson(responseJson);
   await set_user(UserRole);
 }

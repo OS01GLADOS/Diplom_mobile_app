@@ -34,70 +34,86 @@ class RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstants.whiteBackground,
-      body: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Регистрация",
-                style: TextStyle(
-                  color: ColorConstants.darkGreenHeaderText,
-                  fontSize: 30,
-                ),
-              ),
-              InputWidget('Имя ', firstNameController),
-              InputWidget('Фамилия', lastNameController),
-              InputWidget("email", emailController, 'email'),
-              InputWidget("Отдел", departmentController),
-              InputWidget("Логин", loginController),
-              InputWidget('Пароль', passwordController, 'password'),
+      body:
+        Center(
+          child:  Padding(
+            padding: EdgeInsets.only(top: 40),
+            child: SingleChildScrollView(
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Регистрация",
+                        style: TextStyle(
+                          color: ColorConstants.darkGreenHeaderText,
+                          fontSize: 30,
+                        ),
+                      ),
+                      InputWidget('Имя ', firstNameController),
+                      InputWidget('Фамилия', lastNameController),
+                      InputWidget("email", emailController, 'email'),
+                      InputWidget("Отдел", departmentController),
+                      InputWidget("Логин", loginController),
+                      InputWidget('Пароль', passwordController, 'password'),
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child:  ElevatedButton(
-                  onPressed: () async {
-                    // Validate returns true if the form is valid, or false otherwise.
-                    if (_formKey.currentState!.validate()) {
-                      try{
-                        await register(
-                          
-                        );
-                       // Navigator.of(context).pushReplacement(
-                       //     MaterialPageRoute(
-                       //         builder: (context) =>
-                       //             OfficesScreen.without_screen_title())
-                       // );
-                      }
-                      on BadRequestException catch (_){
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(
-                              "Ошибка при регистрации"
-                          )),
-                        );
-                      }
-                    }
-                  },
-                  style: default_style,
-                  child: const Text('Зарегистрироваться'),
-                ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child:  ElevatedButton(
+                          onPressed: () async {
+                            // Validate returns true if the form is valid, or false otherwise.
+                            if (_formKey.currentState!.validate()) {
+                              try{
+                                await register(
+                                    loginController.text,
+                                    passwordController.text,
+                                    emailController.text,
+                                    firstNameController.text,
+                                    lastNameController.text,
+                                    departmentController.text
+                                );
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            OfficesScreen.without_screen_title())
+                                );
+                              }
+                              on BadRequestException catch (_){
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text(
+                                      "Ошибка при регистрации. Проверьте введённые данные."
+                                  )),
+                                );
+                              }
+                            }
+                          },
+                          style: default_style,
+                          child: const Text('Зарегистрироваться'),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: TextButton(
+                          onPressed: (){
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        LoginScreen())
+                            );
+                          },
+                          child: Text('Уже есть аккаунт? Войти!'),
+                        ),
+                      )
+                    ],
+                  )
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: TextButton(
-                  onPressed: (){
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LoginScreen())
-                    );
-                  },
-                  child: Text('Уже есть аккаунт? Войти!'),
-                ),
-              )
-            ],
-          )
-      ),
+            ),
+          ),
+        )
+
+
+
     );
   }
 

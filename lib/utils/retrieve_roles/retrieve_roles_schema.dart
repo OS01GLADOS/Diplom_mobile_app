@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
-
 class RetrieveRoles {
   final RetrieveRolePerson person;
   final List permissions;
-  final Map allowed_locations;
+  final Map? allowed_locations;
 
   const RetrieveRoles({
     required this.person,

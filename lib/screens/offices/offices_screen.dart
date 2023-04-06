@@ -1,13 +1,29 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
 import 'package:diplom_mobile_app/core/widgets/main_navigation_drawer.dart';
+import 'package:diplom_mobile_app/utils/locations/locations.dart';
+import 'package:diplom_mobile_app/utils/locations/locations_schema.dart';
+
 import 'package:flutter/material.dart';
 
-class OfficesScreen extends StatelessWidget {
-  const OfficesScreen({Key? key, required this.title}) : super(key: key);
+import 'locations_list.dart';
 
-  OfficesScreen.without_screen_title(): this.title = "Офисы";
 
-  final String title;
+class OfficesScreen extends StatefulWidget{
+
+  OfficesScreen.without_screen_title(){}
+
+  @override
+  State<OfficesScreen> createState() => OfficesScreenState();
+
+}
+
+
+
+class OfficesScreenState extends State<OfficesScreen> {
+
+  OfficesScreenState([this.title = 'Офисы']);
+
+  String title = "Офисы";
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +34,22 @@ class OfficesScreen extends StatelessWidget {
       ),
       drawer: MainNavigationDrawer(),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Offices screen',
-            ),
-          ],
+        child:  FutureBuilder<List<LocationsOfficeSchema>>(
+          future: get_locations_with_offices(),
+
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text('An error has occurred!'),
+              );
+            } else if (snapshot.hasData) {
+              return LocationsOfficeList(locationsOffice: snapshot.data!);
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
     );

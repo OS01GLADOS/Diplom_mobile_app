@@ -32,6 +32,33 @@ login(String username, String password) async {
   await retrieve_roles_me();
 }
 
-register() {
-  print("[register called]");
+register(
+    String username,
+    String password,
+    String email,
+    String firstName,
+    String lastName,
+    String department
+    )
+async {
+  Map data = {
+    "username":username,
+    "password":password,
+    "email":email,
+    "firstName":firstName,
+    "lastName":lastName,
+    "department":department
+  };
+  final response = await http.post(
+    Uri.parse('$HOST_NAME/api/v1/auth/register/'),
+    body: json.encode(data),
+  );
+
+  if (response.statusCode == 201) {
+    Token token_data =  Token.fromJson(jsonDecode(response.body));
+    await set_token(token_data.token);
+  } else {
+    throw BadRequestException(response.body.toString());
+  }
+  await retrieve_roles_me();
 }
