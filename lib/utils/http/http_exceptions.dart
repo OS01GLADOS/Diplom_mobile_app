@@ -11,4 +11,9 @@ class HttpException implements Exception {
 
 class BadRequestException extends HttpException {
   BadRequestException([message]) : super(message, "Invalid Request: ");
+
+  @override
+  String toString() {
+    return "$_message";
+  }
 }
