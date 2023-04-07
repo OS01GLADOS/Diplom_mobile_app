@@ -4,6 +4,7 @@ import 'package:diplom_mobile_app/utils/offices/offices.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/offices/offices_schema.dart';
+import 'office_detail/office_update_create.dart';
 import 'office_list_item.dart';
 
 class OfficesList extends StatelessWidget {
@@ -31,28 +32,38 @@ class OfficesList extends StatelessWidget {
                         leading: Icon(Icons.delete),
                         title: Text('Удалить офис'),
                         onTap: () async {
-                          try{
+                          try {
                             bool confirm = await confirmDelete(context);
                             if (confirm) {
                               await deleteOffice(offices[index].id);
                               //await deleteLocation(locationsOffice[index].id);
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
                                 content: Text('Успешно удалено'),
                                 duration: Duration(seconds: 2),
                               ));
                             }
-                          }on BadRequestException catch (e) {
+                          } on BadRequestException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Ошибка: ${e.toString()}'),
                               duration: Duration(seconds: 2),
                             ));
-                          }
-                          finally{
+                          } finally {
                             Navigator.of(context).pop();
                           }
-
                         },
                       ),
+                      ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text('Изменить офис'),
+                        onTap: () async {
+                          Navigator.of(context).pop(true);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => OfficeUpdateCreate(office_id:offices[index].id)),
+                          );
+                        }
+                      )
                     ],
                   );
                 },

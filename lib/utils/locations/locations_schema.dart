@@ -11,6 +11,11 @@ class LocationsSchema {
     required this.city
   });
 
+  @override
+  String toString(){
+    return "$country_name, $city";
+  }
+
   factory LocationsSchema.fromJson(Map<String, dynamic> json) {
     return LocationsSchema(
       id: json['id'],
@@ -39,4 +44,13 @@ class LocationsOfficeSchema {
     required this.city,
     required this.offices
   });
+}
+
+
+// Класс для хранения мест
+class Location {
+  final int id;
+  final String name;
+
+  Location({required this.id, required this.name});
 }
