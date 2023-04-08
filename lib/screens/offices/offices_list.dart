@@ -4,6 +4,7 @@ import 'package:diplom_mobile_app/utils/offices/offices.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/offices/offices_schema.dart';
+import 'office_detail/office_detail.dart';
 import 'office_detail/office_update_create.dart';
 import 'office_list_item.dart';
 
@@ -20,6 +21,12 @@ class OfficesList extends StatelessWidget {
         itemCount: offices.length,
         itemBuilder: (context, index) {
           return InkWell(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OfficeDetailScreen(officeId:offices[index].id)),
+              );
+            },
             onLongPress: () {
               // показываем меню при долгом нажатии на элемент
               showModalBottomSheet(
