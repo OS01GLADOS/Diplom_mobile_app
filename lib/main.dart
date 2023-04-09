@@ -1,9 +1,7 @@
 import 'package:diplom_mobile_app/screens/auth/login_screen.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'core/constants/color_constants.dart';
-import 'core/widgets/main_navigation_drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +15,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Office spacing',
-      //home: OfficesScreen.without_screen_title(),
+      theme: ThemeData(
+        primaryColor: ColorConstants.lightGreen,
+      ),
       home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );

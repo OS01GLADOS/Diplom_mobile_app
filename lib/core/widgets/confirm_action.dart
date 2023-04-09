@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-Future<bool> confirmDelete(BuildContext context) async {
+Future<bool> confirmAction(BuildContext context, String action_description) async {
   return await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text("Подтвердите действие"),
-        content: Text("Вы уверены, что хотите удалить этот элемент?"),
+        content: Text(action_description),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -14,7 +14,7 @@ Future<bool> confirmDelete(BuildContext context) async {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text("УДАЛИТЬ"),
+            child: Text("ПОДТВЕРДИТЬ"),
           ),
         ],
       );

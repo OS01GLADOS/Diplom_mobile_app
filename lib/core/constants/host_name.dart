@@ -1,1 +1,1 @@
-const HOST_NAME = "https://fe79-46-216-130-45.ngrok-free.app";
+const HOST_NAME = "https://3aed-46-216-130-45.ngrok-free.app";

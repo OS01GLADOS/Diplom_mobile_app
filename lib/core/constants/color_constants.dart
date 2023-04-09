@@ -19,4 +19,13 @@ class ColorConstants {
   static Color lightGreen = hexToColor('#6fa545');
   static Color saladGreenBackground = hexToColor('#c9e5ab');
   static Color wheatBackground = hexToColor('#e3e16c');
+
+  static Color requestInProgress = hexToColor("#63B3ED");
+  static Color requestApproved = hexToColor("#00A854");
+  static Color requestRejected = hexToColor("#D9534F");
+  static Color requestDelayed = hexToColor("#FF8C00");
+  static Color requestCanceled = hexToColor("#6c757d");
+
+
+
 }

@@ -14,8 +14,8 @@ class Booking {
   String room;
   int floor;
   String office;
-  String comment;
-  String managerComment;
+  String? comment;
+  String? managerComment;
   String location;
 
   Booking.fromJson(Map<String, dynamic> json)

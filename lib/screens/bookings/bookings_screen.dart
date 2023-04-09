@@ -1,20 +1,49 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/confirm_delete.dart';
+import 'package:diplom_mobile_app/core/widgets/confirm_action.dart';
 import 'package:diplom_mobile_app/core/widgets/main_navigation_drawer.dart';
 import 'package:diplom_mobile_app/utils/booking/booking_schema.dart';
+import 'package:diplom_mobile_app/utils/booking/change_booking_status.dart';
 import 'package:diplom_mobile_app/utils/booking/get_bookings.dart';
 import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
+import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles_schema.dart';
+import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'booking_item.dart';
+import 'change_booking_dates.dart';
 
-class BookingsScreen extends StatelessWidget {
+class BookingsScreen extends StatefulWidget{
+
   BookingsScreen({Key? key, required this.title}) : super(key: key);
   BookingsScreen.without_screen_title(): this.title = "Запросы";
   final String title;
 
-  bool is_manager = true;
-  List<int> bookings = [4, 8, 12, 16, 23, 42];
+  @override
+  State<BookingsScreen> createState() => BookingsScreenState();
+
+}
+
+
+class BookingsScreenState extends State<BookingsScreen> {
+
+
+  // find if user is manager
+
+  bool is_manager = false;
+
+
+  @override
+  initState() {
+    super.initState();
+        ()async{
+      RetrieveRoles user = await get_user();
+      setState(() {
+        is_manager = user.permissions.contains("WORKSPACE-REQUEST_APPROVE");
+
+      });
+    }();
+
+  }
 
 
   @override
@@ -22,10 +51,18 @@ class BookingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorConstants.lightGreen,
-        title: Text(title),
+        title: Text(widget.title),
       ),
       drawer: MainNavigationDrawer(),
-      body: Column(
+      body:
+    RefreshIndicator(
+    onRefresh: () async {
+    // Здесь вызывается метод для обновления данных
+    // Например, можно использовать setState для изменения состояния экрана
+    await get_bookings();
+    setState(() {});
+    },
+      child:       Column(
         children: <Widget>[
           FutureBuilder<List<Booking>>(
             future: get_bookings(),
@@ -61,9 +98,9 @@ class BookingsScreen extends StatelessWidget {
                                     title: Text('Одобрить запрос'),
                                     onTap: () async {
                                       try {
-                                        bool confirm = await confirmDelete(context);
+                                        bool confirm = await confirmAction(context, "Вы уверены, что хотите одобрить запрос?");
                                         if (confirm) {
-                                          //todo reject action
+                                          await approve_request(bookings[index].id);
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                             content: Text('Успешно одобрено'),
@@ -76,6 +113,7 @@ class BookingsScreen extends StatelessWidget {
                                           duration: Duration(seconds: 2),
                                         ));
                                       } finally {
+                                        setState(() {});
                                         Navigator.of(context).pop();
                                       }
                                     },
@@ -86,9 +124,9 @@ class BookingsScreen extends StatelessWidget {
                                     title: Text('Отклонить запрос'),
                                     onTap: () async {
                                       try {
-                                        bool confirm = await confirmDelete(context);
+                                        bool confirm = await confirmAction(context, "Вы уверены, что хотите отклонить запрос?");
                                         if (confirm) {
-                                          //todo reject action
+                                          await reject_request(bookings[index].id);
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                             content: Text('Успешно отклонено'),
@@ -101,7 +139,9 @@ class BookingsScreen extends StatelessWidget {
                                           duration: Duration(seconds: 2),
                                         ));
                                       } finally {
+                                        setState(() {});
                                         Navigator.of(context).pop();
+
                                       }
                                     },
                                   ),
@@ -113,47 +153,19 @@ class BookingsScreen extends StatelessWidget {
                                       leading: Icon(Icons.edit),
                                       title: Text('Изменить время бронирования'),
                                       onTap: () async {
-                                        Navigator.of(context).pop(true);
-
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(builder: (context) => BookingScreenDate(booking: bookings[index] ,)));
                                       }
                                   ),
-                                  //delete
-                                  (
-                                      bookings[index] == 4
-                                  ) ?
-                                  ListTile(
-                                    leading: Icon(Icons.delete),
-                                    title: Text('Удалить запрос'),
-                                    onTap: () async {
-                                      try {
-                                        bool confirm = await confirmDelete(context);
-                                        if (confirm) {
-                                          //todo delete action
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text('Успешно удалено'),
-                                            duration: Duration(seconds: 2),
-                                          ));
-                                        }
-                                      } on BadRequestException catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                          content: Text('Ошибка: ${e.toString()}'),
-                                          duration: Duration(seconds: 2),
-                                        ));
-                                      } finally {
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ) :
                                   //delay
                                   ListTile(
                                     leading: Icon(Icons.clear),
                                     title: Text('Отменить запрос'),
                                     onTap: () async {
                                       try {
-                                        bool confirm = await confirmDelete(context);
+                                        bool confirm = await confirmAction(context, "Вы уверены, что хотите отменить запрос?");
                                         if (confirm) {
-                                          //todo delay action
+                                          await delay_request(bookings[index].id);
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                             content: Text('Успешно отменено'),
@@ -167,6 +179,7 @@ class BookingsScreen extends StatelessWidget {
                                         ));
                                       } finally {
                                         Navigator.of(context).pop();
+                                        setState(() {});
                                       }
                                     },
                                   ),
@@ -192,6 +205,9 @@ class BookingsScreen extends StatelessWidget {
           ),
         ],
       ),
+    )
+
+
     );
   }
 
