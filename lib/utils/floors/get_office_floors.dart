@@ -18,7 +18,9 @@ Future<List<GetFloorModel>> get_office_floors(int office_id) async {
 
   if (response.statusCode == 200) {
     final List<dynamic> floorsJson = jsonDecode(response.body);
-    return floorsJson.map((json) => GetFloorModel.fromJson(json)).toList();
+    var res = floorsJson.map((json) => GetFloorModel.fromJson(json)).toList();
+    res.sort((a, b) => a.number.compareTo(b.number));
+    return res;
   } else {
     throw Exception('Failed to load floors');
   }

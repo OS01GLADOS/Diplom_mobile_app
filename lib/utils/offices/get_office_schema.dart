@@ -7,6 +7,7 @@ class Office {
   String? addressEng;
   String postcode;
   int owner;
+  List<int> manager = [];
   int jiraOfficeId;
 
   Office({
@@ -17,6 +18,7 @@ class Office {
     required this.postcode,
     required this.owner,
     required this.jiraOfficeId,
+    required this.manager
   });
 
   factory Office.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Office {
       addressEng: json['address_eng'],
       postcode: json['postcode'] as String,
       owner: json['owner'] as int,
+      manager: json['manager'] != null ? List<int>.from(json['manager']) : [],
       jiraOfficeId: json['jira_office_id'] as int,
     );
   }
@@ -40,6 +43,7 @@ class Office {
     data['postcode'] = this.postcode;
     data['owner'] = this.owner;
     data['jira_office_id'] = this.jiraOfficeId;
+    data['manager'] = this.manager;
     return data;
   }
 }

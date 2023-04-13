@@ -56,26 +56,58 @@ deleteOffice(int id) async {
   }
 }
 
-officeAction(String address, String postcode, int selectedOwnerId,
-    int selectedLocationId,
-    [bool is_update = false, int office_id = 0]) async {
+officeAction(
+    List<int?> managers,
 
-  if(is_update){
-    await updateOffice(
-        address, postcode, selectedOwnerId, selectedLocationId, office_id
-    );
-  }
-  else{
-    await createOffice(address, postcode, selectedOwnerId, selectedLocationId);
-  }
-}
-
-updateOffice(
     String address,
     String postcode,
     int selectedOwnerId,
     int selectedLocationId,
-    int office_id) async
+    List<int> floors,
+    [bool is_update = false, int office_id = 0]
+    ) async {
+
+  print(managers);
+
+  List<int?> filteredManagers = managers
+      .where((manager) => manager != null) // исключаем значения null
+      .toSet() // удаляем повторы
+      .where((manager) => manager != selectedOwnerId) // исключаем элементы, равные selectedOwnerId
+      .toList();
+
+
+  if(is_update){
+    await updateOffice(
+        filteredManagers,
+        address,
+        postcode,
+        selectedOwnerId,
+        selectedLocationId,
+        office_id,
+        floors
+    );
+  }
+  else{
+    await createOffice(
+        filteredManagers,
+        address,
+        postcode,
+        selectedOwnerId,
+        selectedLocationId,
+        floors
+    );
+  }
+}
+
+updateOffice(
+    List<int?> managers,
+    String address,
+    String postcode,
+    int selectedOwnerId,
+    int selectedLocationId,
+    int office_id,
+    List<int> floors
+    ) async
 {
 
   String? token = await get_token();
@@ -88,13 +120,9 @@ updateOffice(
       "address": address,
       "address_eng": adress_translit,
       "postcode": postcode,
-      "manager":[
-        selectedOwnerId
-      ],
+      "manager":managers,
       "owner":  selectedOwnerId,
-      "floors_numbers": [
-        1
-      ],
+      "floors_numbers": floors,
       "jira_office_id":0
     };
 
@@ -125,10 +153,12 @@ updateOffice(
 
 
 createOffice(
+    List<int?> managers,
     String address,
     String postcode,
     int selectedOwnerId,
     int selectedLocationId,
+    List<int> floors
 ) async {
   String? token = await get_token();
   try {
@@ -140,13 +170,9 @@ createOffice(
       "address": address,
       "address_eng": adress_translit,
       "postcode": postcode,
-      "manager":[
-        selectedOwnerId
-      ],
+      "manager":managers,
       "owner":  selectedOwnerId,
-      "floors_numbers": [
-        1
-      ],
+      "floors_numbers":floors,
       "jira_office_id":0
     };
 
