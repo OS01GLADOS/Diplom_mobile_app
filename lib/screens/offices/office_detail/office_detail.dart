@@ -1,8 +1,10 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
+import 'package:diplom_mobile_app/screens/floor/office_floor_list.dart';
+import 'package:diplom_mobile_app/screens/offices/office_detail/office_stat_widget.dart';
+import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
 import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
 import 'package:diplom_mobile_app/utils/offices/get_office_detail.dart';
 import 'package:diplom_mobile_app/utils/offices/get_office_schema.dart';
-import 'package:diplom_mobile_app/screens/offices/office_detail/office_stat_widget.dart';
 import 'package:flutter/material.dart';
 
 class OfficeDetailScreen extends StatefulWidget {
@@ -15,32 +17,28 @@ class OfficeDetailScreen extends StatefulWidget {
 }
 
 class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
-
   String address = "";
   int numberOfReservedWorkspaces = 0;
   int numberOfBookedWorkspaces = 0;
-  int numberOfOccupiedWorkspaces =0;
-  int numberOfFreeWorkspaces =0;
-  int numberOfRemoteWorkspaces=0;
-
-
+  int numberOfOccupiedWorkspaces = 0;
+  int numberOfFreeWorkspaces = 0;
+  int numberOfRemoteWorkspaces = 0;
 
   @override
   initState() {
     super.initState();
-        ()async{
-          OfficeDetail office_detail = await get_office_detail(widget.officeId);
+    () async {
+      OfficeDetail office_detail = await get_office_detail(widget.officeId);
       setState(() {
         address = office_detail.address;
         numberOfReservedWorkspaces = office_detail.numberOfReservedWorkspaces;
         numberOfBookedWorkspaces = office_detail.numberOfBookedWorkspaces;
-        numberOfOccupiedWorkspaces =office_detail.numberOfOccupiedWorkspaces;
-        numberOfFreeWorkspaces =office_detail.numberOfFreeWorkspaces;
-        numberOfRemoteWorkspaces=office_detail.numberOfRemoteWorkspaces;
+        numberOfOccupiedWorkspaces = office_detail.numberOfOccupiedWorkspaces;
+        numberOfFreeWorkspaces = office_detail.numberOfFreeWorkspaces;
+        numberOfRemoteWorkspaces = office_detail.numberOfRemoteWorkspaces;
         _managersList = office_detail.manager;
       });
     }();
-
   }
 
   List<Employee> _managersList = [];
@@ -88,14 +86,12 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child:
-              OfficeStatsWidget(
+              child: OfficeStatsWidget(
                   numberOfReservedWorkspaces: numberOfReservedWorkspaces,
                   numberOfBookedWorkspaces: numberOfBookedWorkspaces,
                   numberOfOccupiedWorkspaces: numberOfOccupiedWorkspaces,
                   numberOfFreeWorkspaces: numberOfFreeWorkspaces,
-                  numberOfRemoteWorkspaces: numberOfRemoteWorkspaces
-              ),
+                  numberOfRemoteWorkspaces: numberOfRemoteWorkspaces),
             ),
             Divider(thickness: 1.0),
             Padding(
@@ -130,12 +126,7 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Здесь будут данные об этажах офиса',
-                style: TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
+              child: FloorsListWidget(office_id: widget.officeId),
             ),
             SizedBox(height: 16.0),
           ],
