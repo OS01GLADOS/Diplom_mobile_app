@@ -20,5 +20,6 @@ Future<Office> get_office(int id) async {
   var res = jsonDecode(utf8.decode(response.bodyBytes));
   res['location'] = res['location']['id'];
   res['owner'] = res['owner']['id'];
+  res['manager'] = (res['manager'].toList().isEmpty)? []: res['manager'].map((manager) => manager['id']).toList();
   return Office.fromJson(res);
 }

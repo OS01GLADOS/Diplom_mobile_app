@@ -18,7 +18,6 @@ Future<OfficeDetail> get_office_detail(int id) async {
   );
   var res = jsonDecode(utf8.decode(response.bodyBytes));
   res['location'] = res['location']['id'];
-  res['owner'] = res['owner']['id'];
   return OfficeDetail.fromJson(res);
 }
 

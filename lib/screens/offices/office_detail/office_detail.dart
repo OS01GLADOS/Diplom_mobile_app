@@ -37,10 +37,12 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
         numberOfFreeWorkspaces = office_detail.numberOfFreeWorkspaces;
         numberOfRemoteWorkspaces = office_detail.numberOfRemoteWorkspaces;
         _managersList = office_detail.manager;
+        _owner = office_detail.owner;
       });
     }();
   }
 
+  Employee? _owner;
   List<Employee> _managersList = [];
 
   @override
@@ -94,6 +96,7 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
                   numberOfRemoteWorkspaces: numberOfRemoteWorkspaces),
             ),
             Divider(thickness: 1.0),
+            if(_managersList.isNotEmpty || _owner != null)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -104,14 +107,19 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
                 ),
               ),
             ),
+            if(_managersList.isNotEmpty || _owner != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Здесь будут данные о менеджерах офиса',
-                style: TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
+              child:
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_owner != null)
+                    Text("${_owner.toString()}, Владелец офиса"),
+                  for (final manager in _managersList)
+                    Text("${manager.toString()}, офис менеджер")
+                ],
+              )
             ),
             Divider(thickness: 1.0),
             Padding(
@@ -126,7 +134,7 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: FloorsListWidget(office_id: widget.officeId),
+              child: FloorsListWidget(office_id: widget.officeId, ),
             ),
             SizedBox(height: 16.0),
           ],

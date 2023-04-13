@@ -50,6 +50,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
               _postcodeController.text = office.postcode;
               _selectedLocationId = office.location;
               _selectedOwnerId = office.owner;
+
             });
           }
     }();
@@ -133,6 +134,8 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                     },
                   ),
             ),
+
+
 
                 InputFrameWidget(
                   'Местоположение',

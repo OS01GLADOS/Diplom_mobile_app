@@ -4,7 +4,7 @@ class Office {
   int id;
   int location;
   String address;
-  String addressEng;
+  String? addressEng;
   String postcode;
   int owner;
   int jiraOfficeId;
@@ -24,7 +24,7 @@ class Office {
       id: json['id'] as int,
       location: json['location'] as int,
       address: json['address'] as String,
-      addressEng: json['address_eng'] as String,
+      addressEng: json['address_eng'],
       postcode: json['postcode'] as String,
       owner: json['owner'] as int,
       jiraOfficeId: json['jira_office_id'] as int,
@@ -48,8 +48,9 @@ class OfficeDetail {
   int id;
   int location;
   String address;
-  String addressEng;
+  String? addressEng;
   String postcode;
+  Employee? owner;
   List<Employee> manager;
   int jiraOfficeId;
   int numberOfReservedWorkspaces;
@@ -64,6 +65,7 @@ class OfficeDetail {
     required this.address,
     required this.addressEng,
     required this.postcode,
+    required this.owner,
     required this.manager,
     required this.jiraOfficeId,
     required this.numberOfReservedWorkspaces,
@@ -77,9 +79,10 @@ class OfficeDetail {
     return OfficeDetail(
       id: json['id'] as int,
       location: json['location'] as int,
-      address: json['address'] as String,
-      addressEng: json['address_eng'] as String,
+      address: json['address'],
+      addressEng: json['address_eng'],
       postcode: json['postcode'] as String,
+      owner: Employee.fromJson(json['owner']),
       manager: (json['manager'] as List<dynamic>).map((e) => Employee.fromJson(e)).toList(),
       jiraOfficeId: json['jira_office_id'] as int,
       numberOfReservedWorkspaces: json['number_of_reserved_workspaces'] as int,
@@ -97,7 +100,8 @@ class OfficeDetail {
     data['address'] = this.address;
     data['address_eng'] = this.addressEng;
     data['postcode'] = this.postcode;
-    data['manager'] = this.manager.map((e) => e.toJson()).toList();;
+    data['owner'] =  (this.owner != null)? this.owner!.id:null;
+    data['manager'] = this.manager.map((e) => e.id).toList();
     data['jira_office_id'] = this.jiraOfficeId;
     data['number_of_reserved_workspaces'] = this.numberOfReservedWorkspaces;
     data['number_of_booked_workspaces'] = this.numberOfBookedWorkspaces;
