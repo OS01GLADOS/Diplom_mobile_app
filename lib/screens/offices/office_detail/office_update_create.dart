@@ -27,7 +27,7 @@ class OfficeUpdateCreate extends StatefulWidget {
 class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
 
   bool is_update = false;
-  List<int> _floor_list = [1];
+  List<int> _floor_list = [];
   List<TextEditingController> _floor_controllers = [];
 
   void removeFloor(int index) {
@@ -82,12 +82,33 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
               _selectedLocationId = office.location;
               _selectedOwnerId = office.owner;
               _managers = office.manager;
+
+              if (_managers.isNotEmpty) {
+                _selectedManager1Id = _managers[0];
+              }
+              if (_managers.length > 1) {
+                _selectedManager2Id = _managers[1];
+              }
+              if (_managers.length > 2) {
+                _selectedManager3Id = _managers[2];
+              }
+              if (_managers.length < 3) {
+                _selectedManager3Id = null;
+                if (_managers.length < 2) {
+                  _selectedManager2Id = null;
+                  if (_managers.isEmpty) {
+                    _selectedManager1Id = null;
+                  }
+                }
+              }
+              is_ready = true;
             });
           }
 
           for (int i = 0; i < _floor_list.length; i++) {
             _floor_controllers.add(TextEditingController(text: _floor_list[i].toString()));
           }
+
     }();
   }
 
@@ -111,6 +132,8 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
   int? _selectedManager1Id;
   int? _selectedManager2Id;
   int? _selectedManager3Id;
+
+  bool is_ready =false;
   // Список мест для выбора
 
   List<LocationsSchema> _locations = [];
@@ -129,230 +152,240 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
           },
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                InputFrameWidget(
-                  'Адрес',
-                  TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Введите адрес';
-                      }
-                      return null;
-                    },
-                    controller: _addressController,
-                  ),
-                ),
-                InputFrameWidget(
-                  'Индекс',
-                  TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Введите индекс';
-                      }
-                      return null;
-                    },
-                    controller: _postcodeController,
-                  ),
-                ),
-                InputFrameWidget(
-              'Владелец офиса',
-                  DropdownButtonFormField<int>(
-                    value: _selectedOwnerId,
-                    items: _owners.map((owner) {
-                      return DropdownMenuItem<int>(
-                        value: owner.id,
-                        child: Text(owner.toString()),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedOwnerId = value;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Выберите владельца офиса';
-                      }
-                      return null;
-                    },
-                  ),
-            ),
+      body:
+      Stack(
+        children: [
+          if(!is_ready)
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    InputFrameWidget(
+                      'Адрес',
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Введите адрес';
+                          }
+                          return null;
+                        },
+                        controller: _addressController,
+                      ),
+                    ),
+                    InputFrameWidget(
+                      'Индекс',
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Введите индекс';
+                          }
+                          return null;
+                        },
+                        controller: _postcodeController,
+                      ),
+                    ),
+                    InputFrameWidget(
+                      'Владелец офиса',
+                      DropdownButtonFormField<int>(
+                        value: _selectedOwnerId,
+                        items: _owners.map((owner) {
+                          return DropdownMenuItem<int>(
+                            value: owner.id,
+                            child: Text(owner.toString()),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedOwnerId = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Выберите владельца офиса';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
 
-                InputFrameWidget(
-                  'Менеджеры',
-                  Column(
-                    children: [
-                      DropdownButtonFormField<int>(
-                        value: _selectedManager1Id,
-                        items: [
-                          ..._owners.map((owner) {
-                            return DropdownMenuItem<int>(
-                              value: owner.id,
-                              child: Text(owner.toString()),
-                            );
-                          }),
-                          DropdownMenuItem<int>(
-                            value: null,
-                            child: Text('---'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedManager1Id = value;
-                          });
-                        },
-                        validator: null,
-                      ),
-                      DropdownButtonFormField<int>(
-                        value: _selectedManager2Id,
-                        items: [
-                          ..._owners.map((owner) {
-                            return DropdownMenuItem<int>(
-                              value: owner.id,
-                              child: Text(owner.toString()),
-                            );
-                          }),
-                          DropdownMenuItem<int>(
-                            value: null,
-                            child: Text('---'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedManager2Id = value;
-                          });
-                        },
-                        validator: null,
-                      ),
-                      DropdownButtonFormField<int>(
-                        value: _selectedManager3Id,
-                        items: [
-                          ..._owners.map((owner) {
-                            return DropdownMenuItem<int>(
-                              value: owner.id,
-                              child: Text(owner.toString()),
-                            );
-                          }),
-                          DropdownMenuItem<int>(
-                            value: null,
-                            child: Text('---'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedManager3Id = value;
-                          });
-                        },
-                        validator: null,
-                      ),
-                    ],
-                  ),
-                ),
-
-                InputFrameWidget(
-                  'этажи',
-                    Padding
-                      (
-                      padding: EdgeInsets.only(top: 14),
-                      child: Column(
+                    InputFrameWidget(
+                      'Менеджеры',
+                      Column(
                         children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _floor_list.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                leading: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    removeFloor(index);
-
-                                  },
-                                ),
-                                title: TextFormField(
-                                  keyboardType: TextInputType.number,
-                                  controller: _floor_controllers[index],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _floor_list[index] = int.parse(value);
-                                    });
-                                  },
-                                ),
-                              );
+                          DropdownButtonFormField<int>(
+                            value: _selectedManager1Id,
+                            items: [
+                              ..._owners.map((owner) {
+                                return DropdownMenuItem<int>(
+                                  value: owner.id,
+                                  child: Text(owner.toString()),
+                                );
+                              }),
+                              DropdownMenuItem<int>(
+                                value: null,
+                                child: Text('---'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedManager1Id = value;
+                              });
                             },
+                            validator: null,
                           ),
-                          ElevatedButton(
-                            style: default_style,
-                            child: Text('Добавить этаж'),
-                            onPressed: addFloor,
+                          DropdownButtonFormField<int>(
+                            value: _selectedManager2Id,
+                            items: [
+                              ..._owners.map((owner) {
+                                return DropdownMenuItem<int>(
+                                  value: owner.id,
+                                  child: Text(owner.toString()),
+                                );
+                              }),
+                              DropdownMenuItem<int>(
+                                value: null,
+                                child: Text('---'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedManager2Id = value;
+                              });
+                            },
+                            validator: null,
+                          ),
+                          DropdownButtonFormField<int>(
+                            value: _selectedManager3Id,
+                            items: [
+                              ..._owners.map((owner) {
+                                return DropdownMenuItem<int>(
+                                  value: owner.id,
+                                  child: Text(owner.toString()),
+                                );
+                              }),
+                              DropdownMenuItem<int>(
+                                value: null,
+                                child: Text('---'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedManager3Id = value;
+                              });
+                            },
+                            validator: null,
                           ),
                         ],
-                      )
-                    )
+                      ),
+                    ),
+
+                    InputFrameWidget(
+                        'этажи',
+                        Padding
+                          (
+                            padding: EdgeInsets.only(top: 14),
+                            child: Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _floor_list.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return ListTile(
+                                      leading: IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          removeFloor(index);
+
+                                        },
+                                      ),
+                                      title: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: _floor_controllers[index],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _floor_list[index] = int.parse(value);
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                                ElevatedButton(
+                                  style: default_style,
+                                  child: Text('Добавить этаж'),
+                                  onPressed: addFloor,
+                                ),
+                              ],
+                            )
+                        )
 
 
+                    ),
+
+                    InputFrameWidget(
+                      'Местоположение',
+                      DropdownButtonFormField<int>(
+                        value: _selectedLocationId,
+                        items: _locations.map((location) {
+                          return DropdownMenuItem<int>(
+                            value: location.id,
+                            child: Text(location.toString()),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedLocationId = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Выберите местоположение';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+
+
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: ColorConstants.lightGreen,
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          //get office floors
+
+                          await officeAction(
+                            [_selectedManager1Id, _selectedManager2Id, _selectedManager3Id],
+                            _addressController.text,
+                            _postcodeController.text,
+                            _selectedOwnerId!,
+                            _selectedLocationId!,
+                            _floor_list,
+                            (widget.office_id != null),
+                            (widget.office_id == null) ? 0 : widget.office_id!,
+                          );
+                          Navigator.of(context).pop(true);
+
+                        }
+                      },
+                      child: Text(button_text),
+                    ),
+                  ],
                 ),
-
-                InputFrameWidget(
-                  'Местоположение',
-                  DropdownButtonFormField<int>(
-                    value: _selectedLocationId,
-                    items: _locations.map((location) {
-                      return DropdownMenuItem<int>(
-                        value: location.id,
-                        child: Text(location.toString()),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedLocationId = value;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Выберите местоположение';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-
-
-
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: ColorConstants.lightGreen,
-                  ),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      //get office floors
-
-                      await officeAction(
-                        [_selectedManager1Id, _selectedManager2Id, _selectedManager3Id],
-                        _addressController.text,
-                        _postcodeController.text,
-                        _selectedOwnerId!,
-                        _selectedLocationId!,
-                        _floor_list,
-                          (widget.office_id != null),
-                          (widget.office_id == null) ? 0 : widget.office_id!,
-                      );
-                      Navigator.of(context).pop(true);
-
-                    }
-                  },
-                  child: Text(button_text),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        ],
+      )
+
     );
   }
 }
