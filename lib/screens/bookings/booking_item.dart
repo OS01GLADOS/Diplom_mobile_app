@@ -63,6 +63,7 @@ class BookingItemWidget extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if(booking.officeManagerName != null)
             Text('Менеджер: ${booking.officeManagerName}'),
           ],
         ),

@@ -9,8 +9,8 @@ class Booking {
   String employeeName;
   int workspaceId;
   int workspaceNumber;
-  int officeManagerId;
-  String officeManagerName;
+  int? officeManagerId;
+  String? officeManagerName;
   String room;
   int floor;
   String office;
@@ -29,8 +29,8 @@ class Booking {
         employeeName = json['employee']['preferred_name'],
         workspaceId = json['workspace']['id'],
         workspaceNumber = json['workspace']['number'],
-        officeManagerId = json['office_manager']['id'],
-        officeManagerName = json['office_manager']['preferred_name'],
+        officeManagerId = (json['office_manager'] != null) ? json['office_manager']['id']:null,
+        officeManagerName =(json['office_manager'] != null) ? json['office_manager']['preferred_name']: null,
         room = json['room'],
         floor = json['floor'],
         office = json['office'],

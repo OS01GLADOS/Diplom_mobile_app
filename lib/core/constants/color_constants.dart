@@ -26,6 +26,10 @@ class ColorConstants {
   static Color requestDelayed = hexToColor("#FF8C00");
   static Color requestCanceled = hexToColor("#6c757d");
 
-
+  static Color workspaceFreeColor = hexToColor("#00FF00");
+  static Color workspaceReservedColor = hexToColor("#FFFF00");
+  static Color workspaceBookedColor = hexToColor("#0000FF");
+  static Color workspaceOccupiedColor = hexToColor("#FF0000");
+  static Color workspaceRemoteColor = hexToColor("#800080");
 
 }
