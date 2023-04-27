@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
 import 'package:diplom_mobile_app/core/constants/host_name.dart';
@@ -6,6 +7,7 @@ import 'package:diplom_mobile_app/screens/bookings/create_workspace_request.dart
 import 'package:diplom_mobile_app/screens/floor/workspace.dart';
 import 'package:diplom_mobile_app/utils/floors/plan/retrieve_plan.dart';
 import 'package:diplom_mobile_app/utils/floors/plan/rooms_schema.dart';
+import 'package:diplom_mobile_app/utils/floors/workspaces/check_overlap.dart';
 import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles_schema.dart';
 import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +38,7 @@ class _ShowFloorPlanState extends State<ShowFloorPlan> {
 
   late Future<List<Room>> _future;
   List<Room> _rooms = [];
-
-  double? _x;
-  double? _y;
+  
 
   Future<List<Workspace>> get_workspaces() async {
     return _workspaces;
@@ -206,107 +206,137 @@ class _ShowFloorPlanState extends State<ShowFloorPlan> {
                                 Positioned(
                                   left: workspace.coordinates[0][0],
                                   top: workspace.coordinates[0][1],
-                                  child: Draggable(
-                                    data: workspace,
-                                    child:
-                                    InkWell(
-                                    onLongPress: () {
-                                        // показываем меню при долгом нажатии на элемент
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children:
-                                              [
-                                                Container(
-                                                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                                                  child: Text(
-                                                    'Место №${workspace.number}',
-                                                    style: TextStyle(
-                                                      fontSize: 18.0, // задаем размер шрифта
+                                  child:
+                                  Stack(
+                                    children: [
+                                      Transform.rotate(
+                                      angle: workspace.rotateDegree * pi / 180,
+                                      alignment: Alignment.topCenter,
+                                      child: Draggable(
+                                        data: workspace,
+                                        child:
+                                        InkWell(
+                                          onLongPress: () {
+                                            // показываем меню при долгом нажатии на элемент
+                                            showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children:
+                                                  [
+                                                    Container(
+                                                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                                                      child: Text(
+                                                        'Место №${workspace.number}',
+                                                        style: TextStyle(
+                                                          fontSize: 18.0, // задаем размер шрифта
+                                                        ),
+                                                        textAlign: TextAlign.center, // центрируем текст
+                                                      ),
                                                     ),
-                                                    textAlign: TextAlign.center, // центрируем текст
-                                                  ),
-                                                ),
-                                                //if (is_manager)
-                                                //изменить место
-                                                ListTile(
-                                                  leading: Icon(Icons.edit),
-                                                  title: Text('Изменить место'),
-                                                  onTap: () async {
-                                                    Navigator.of(context).pushReplacement(
-                                                        MaterialPageRoute(builder: (context) => EditWorkspaceScreen(workspace: workspace, webSocketChannel: _webSocketChannel,)));
-                                                  },
-                                                ),
-                                                //if (is_manager)
-                                                //удалить место
-                                                  ListTile(
-                                                    leading: Icon(Icons.clear),
-                                                    title: Text('Удалить рабочее место'),
-                                                    onTap: () async {
-                                                      try {
-                                                        bool confirm = await confirmAction(context, "Вы уверены, что хотите отменить запрос?");
-                                                        if (confirm) {
-                                                          _webSocketChannel.sink.add(
-                                                            '''
+                                                    //if (is_manager)
+                                                    //изменить место
+                                                    ListTile(
+                                                      leading: Icon(Icons.edit),
+                                                      title: Text('Изменить место'),
+                                                      onTap: () async {
+                                                        Navigator.of(context).pushReplacement(
+                                                            MaterialPageRoute(builder: (context) => EditWorkspaceScreen(workspace: workspace, webSocketChannel: _webSocketChannel,)));
+                                                      },
+                                                    ),
+                                                    //if (is_manager)
+                                                    //удалить место
+                                                    ListTile(
+                                                      leading: Icon(Icons.clear),
+                                                      title: Text('Удалить рабочее место'),
+                                                      onTap: () async {
+                                                        try {
+                                                          bool confirm = await confirmAction(context, "Вы уверены, что хотите отменить запрос?");
+                                                          if (confirm) {
+                                                            _webSocketChannel.sink.add(
+                                                                '''
                                                             {
                                                                 "event":"delete",
                                                                 "id": ${workspace.id}
                                                             }
                                                             '''
-                                                          );
+                                                            );
+                                                          }
+                                                        }  finally {
+                                                          Navigator.of(context).pop();
+                                                          setState(() {});
                                                         }
-                                                      }  finally {
-                                                        Navigator.of(context).pop();
-                                                        setState(() {});
-                                                      }
-                                                    },
-                                                  ),
-                                                //if (!is_manager)
-                                                //забронировать место
-                                                ListTile(
-                                                    leading: Icon(Icons.add),
-                                                    title: Text('Забронировать место'),
-                                                    onTap: () async {
-                                                      Navigator.of(context).pushReplacement(
-                                                          MaterialPageRoute(builder: (context) => BookingCreateWidget(workspace)));
-                                                    }
-                                                ),
+                                                      },
+                                                    ),
+                                                    //if (!is_manager)
+                                                    //забронировать место
+                                                    ListTile(
+                                                        leading: Icon(Icons.add),
+                                                        title: Text('Забронировать место'),
+                                                        onTap: () async {
+                                                          Navigator.of(context).pushReplacement(
+                                                              MaterialPageRoute(builder: (context) => BookingCreateWidget(workspace)));
+                                                        }
+                                                    ),
 
-                                              ]
-                                              ,
+                                                  ]
+                                                  ,
+                                                );
+                                              },
                                             );
                                           },
-                                        );
-                                      },
-                                      child: WorkspaceContainer(workspace:workspace),
+                                          child: WorkspaceContainer(workspace:workspace),
+                                        ),
+                                        feedback: Transform.rotate(
+                                          angle: workspace.rotateDegree * pi / 180,
+                                          alignment: Alignment.topCenter,
+                                          child: WorkspaceContainer(workspace:workspace),),
+                                        childWhenDragging: Container(),
+                                        onDragEnd: (details) {
+                                          if (details.wasAccepted){
+                                            final RenderBox? box =
+                                            _key.currentContext?.findRenderObject() as RenderBox?;
+                                            final Offset? position = box?.localToGlobal(Offset.zero);
+                                            double x = 0, y =0;
+                                            if (position != null) {
+                                              x = (details.offset.dx - position.dx);
+                                              y = (details.offset.dy - position.dy);
+                                            }
+                                            if (checkOverlap(workspace.id, x,y, _workspaces, workspace.rotateDegree))
+                                            {
+                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                content: Text('Внимание, столы пересекаются'),
+                                              ));
+                                            }
+                                            else{
+                                              workspace.room = room_id;
+                                              //x  00
+                                              workspace.coordinates[0][0] = x;
+                                              //y  01
+                                              workspace.coordinates[0][1] = y;
+                                              change_workspace_position(workspace, _webSocketChannel, x, y);
+                                              setState((){});
+                                            }
+                                          }
+                                          else{
+                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                              content: Text('Внимание, стол не может находиться за границами кабинета'),
+                                            ));
+                                          }
+
+                                        },
+                                        onDraggableCanceled:
+                                            (Velocity velocity, Offset offset) {
+                                          setState(() {
+                                            // обработка отмены перетаскивания
+                                          });
+                                        },
+                                      ),
                                     ),
-                                    feedback: WorkspaceContainer(workspace:workspace),
-                                    childWhenDragging: Container(),
-                                    onDragStarted: () {
-                                      print(
-                                          'Start drag: ${workspace.coordinates}');
-                                    },
-                                    onDragEnd: (details) {
-                                      final RenderBox? box =
-                                      _key.currentContext?.findRenderObject() as RenderBox?;
-                                      final Offset? position = box?.localToGlobal(Offset.zero);
-                                      double x = 0, y =0;
-                                      if (position != null) {
-                                        x = (details.offset.dx - position.dx);
-                                        y = (details.offset.dy - position.dy);
-                                      }
-                                      workspace.room = room_id;
-                                      change_workspace_position(workspace, _webSocketChannel, x, y);
-                                    },
-                                    onDraggableCanceled:
-                                        (Velocity velocity, Offset offset) {
-                                      setState(() {
-                                        // обработка отмены перетаскивания
-                                      });
-                                    },
-                                  ),
+                                    ],
+                                  )
+
                                 ),
                               );
                             })
