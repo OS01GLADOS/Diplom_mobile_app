@@ -37,7 +37,7 @@ class FloorsListWidget extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FloorDetailWidget(floor: floor,),
+                        builder: (context) => FloorDetailWidget(floor: floor, officeId: office_id,),
                       ),
                     );
                   },

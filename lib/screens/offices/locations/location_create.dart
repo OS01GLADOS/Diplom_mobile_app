@@ -1,5 +1,6 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
 import 'package:diplom_mobile_app/core/widgets/input_widget.dart';
+import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
 import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
 import 'package:diplom_mobile_app/utils/locations/locations.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,14 @@ class _CreateLocationWidgetState extends State<CreateLocationWidget> {
                         content: Text('Локация успешно добавлена'),
                         duration: Duration(seconds: 5),
                       ));
-                      Navigator.of(context).pop(true);
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OfficesScreen.without_screen_title(
+                          ),
+                        ),
+                      );
                     } on BadRequestException catch (e) {
                       // Обрабатываем ошибку BadRequestException и выводим сообщение пользователю
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

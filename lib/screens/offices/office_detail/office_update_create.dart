@@ -1,6 +1,7 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
 import 'package:diplom_mobile_app/core/widgets/button_style.dart';
 import 'package:diplom_mobile_app/core/widgets/input_frame.dart';
+import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
 import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
 import 'package:diplom_mobile_app/utils/employees/employees.dart';
 import 'package:diplom_mobile_app/utils/floors/get_office_floors.dart';
@@ -42,8 +43,12 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
   }
 
   void addFloor() {
+    int lastFloor = 0;
+    if(_floor_list.isNotEmpty){
+      _floor_list.sort();
+      lastFloor = _floor_list.last;
+    }
     setState(() {
-      int lastFloor = _floor_list.last;
       _floor_list.add(lastFloor + 1);
       _floor_controllers.add(TextEditingController(text: (lastFloor + 1).toString()));
     });
@@ -65,9 +70,9 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
           setState(() {
             _locations = locations;
             _owners = employees;
-            is_update = true;
           });
           if (widget.office_id != null){
+            is_update = true;
             var floors = await get_office_floors(widget.office_id!);
             var floor_list = floors.map((e) => e.number).toList();
 
@@ -101,10 +106,9 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                   }
                 }
               }
-              is_ready = true;
             });
           }
-
+          is_ready = true;
           for (int i = 0; i < _floor_list.length; i++) {
             _floor_controllers.add(TextEditingController(text: _floor_list[i].toString()));
           }
@@ -148,7 +152,13 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OfficesScreen.without_screen_title(
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -159,6 +169,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
           Center(
             child: CircularProgressIndicator(),
           ),
+          if(is_ready)
           Padding(
             padding: EdgeInsets.all(16.0),
             child: SingleChildScrollView(
@@ -372,7 +383,13 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                             (widget.office_id != null),
                             (widget.office_id == null) ? 0 : widget.office_id!,
                           );
-                          Navigator.of(context).pop(true);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OfficesScreen.without_screen_title(
+                              ),
+                            ),
+                          );
 
                         }
                       },

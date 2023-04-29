@@ -8,18 +8,25 @@ import 'package:flutter/material.dart';
 import 'location_create.dart';
 import 'location_list_item.dart';
 
-class LocationsOfficeList extends StatelessWidget {
-  LocationsOfficeList({ required this.locationsOffice});
+
+class LocationsOfficeList extends StatefulWidget {
+  LocationsOfficeList({ required this.locationsOffice, required this.callback});
 
   final List<LocationsOfficeSchema> locationsOffice;
+  final callback;
 
+
+  LocationsOfficeListState createState() => LocationsOfficeListState();
+}
+
+class LocationsOfficeListState extends State<LocationsOfficeList> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: locationsOffice.length,
+            itemCount: widget.locationsOffice.length,
             itemBuilder: (context, index) {
               return InkWell(
                 onLongPress: () {
@@ -37,11 +44,12 @@ class LocationsOfficeList extends StatelessWidget {
                               try{
                                 bool confirm = await confirmDelete(context);
                                 if (confirm) {
-                                  await deleteLocation(locationsOffice[index].id);
+                                  await deleteLocation(widget.locationsOffice[index].id);
                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text('Успешно удалено'),
                                     duration: Duration(seconds: 2),
                                   ));
+                                  widget.callback();
                                 }
                               }on BadRequestException catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -59,7 +67,7 @@ class LocationsOfficeList extends StatelessWidget {
                     },
                   );
                 },
-                child: LocationsListItem(locationsOffice: locationsOffice[index]),
+                child: LocationsListItem(locationsOffice: widget.locationsOffice[index]),
               );
             },
           ),

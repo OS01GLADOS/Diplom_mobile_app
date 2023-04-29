@@ -1,11 +1,14 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
+import 'package:diplom_mobile_app/core/widgets/loading_screen.dart';
 import 'package:diplom_mobile_app/screens/floor/office_floor_list.dart';
 import 'package:diplom_mobile_app/screens/offices/office_detail/office_stat_widget.dart';
+import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
 import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
 import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
 import 'package:diplom_mobile_app/utils/offices/get_office_detail.dart';
 import 'package:diplom_mobile_app/utils/offices/get_office_schema.dart';
 import 'package:flutter/material.dart';
+
 
 class OfficeDetailScreen extends StatefulWidget {
   final int officeId;
@@ -16,7 +19,9 @@ class OfficeDetailScreen extends StatefulWidget {
   _OfficeDetailScreenState createState() => _OfficeDetailScreenState();
 }
 
-class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
+class _OfficeDetailScreenState extends State<OfficeDetailScreen>  {
+  bool is_loading = false;
+
   String address = "";
   int numberOfReservedWorkspaces = 0;
   int numberOfBookedWorkspaces = 0;
@@ -27,6 +32,8 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
   @override
   initState() {
     super.initState();
+    print('start detail state');
+    is_loading = true;
     () async {
       OfficeDetail office_detail = await get_office_detail(widget.officeId);
       setState(() {
@@ -39,106 +46,135 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen> {
         _managersList = office_detail.manager;
         _owner = office_detail.owner;
       });
+      is_loading = false;
+      print('end detail state');
     }();
+
   }
 
+
+  
   Employee? _owner;
   List<Employee> _managersList = [];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: ColorConstants.lightGreen,
-        title: Text('Информация об офисе'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Адрес',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
+
+    return WillPopScope(
+        onWillPop: () {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OfficesScreen.without_screen_title(
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                address,
-                style: TextStyle(
-                  fontSize: 18.0,
+          );
+          return Future.value(false);
+        },
+      child:  Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorConstants.lightGreen,
+            title: Text('Информация об офисе'),
+          ),
+          body:
+          Stack(
+            children: [
+              if(!is_loading)
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Адрес',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          address,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ),
+                      Divider(thickness: 1.0),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Статистика',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: OfficeStatsWidget(
+                            numberOfReservedWorkspaces: numberOfReservedWorkspaces,
+                            numberOfBookedWorkspaces: numberOfBookedWorkspaces,
+                            numberOfOccupiedWorkspaces: numberOfOccupiedWorkspaces,
+                            numberOfFreeWorkspaces: numberOfFreeWorkspaces,
+                            numberOfRemoteWorkspaces: numberOfRemoteWorkspaces),
+                      ),
+                      Divider(thickness: 1.0),
+                      if(_managersList.isNotEmpty || _owner != null)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'Менеджеры',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      if(_managersList.isNotEmpty || _owner != null)
+                        Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child:
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_owner != null)
+                                  Text("${_owner.toString()}, Владелец офиса"),
+                                for (final manager in _managersList)
+                                  Text("${manager.toString()}, офис менеджер")
+                              ],
+                            )
+                        ),
+                      Divider(thickness: 1.0),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Этажи',
+                          style: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: FloorsListWidget(office_id: widget.officeId, ),
+                      ),
+                      SizedBox(height: 16.0),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-            Divider(thickness: 1.0),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Статистика',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: OfficeStatsWidget(
-                  numberOfReservedWorkspaces: numberOfReservedWorkspaces,
-                  numberOfBookedWorkspaces: numberOfBookedWorkspaces,
-                  numberOfOccupiedWorkspaces: numberOfOccupiedWorkspaces,
-                  numberOfFreeWorkspaces: numberOfFreeWorkspaces,
-                  numberOfRemoteWorkspaces: numberOfRemoteWorkspaces),
-            ),
-            Divider(thickness: 1.0),
-            if(_managersList.isNotEmpty || _owner != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Менеджеры',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            if(_managersList.isNotEmpty || _owner != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child:
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_owner != null)
-                    Text("${_owner.toString()}, Владелец офиса"),
-                  for (final manager in _managersList)
-                    Text("${manager.toString()}, офис менеджер")
-                ],
-              )
-            ),
-            Divider(thickness: 1.0),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Этажи',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: FloorsListWidget(office_id: widget.officeId, ),
-            ),
-            SizedBox(height: 16.0),
-          ],
-        ),
+              if(is_loading)
+                LoadingScreen(),
+            ],
+          )
+
+
       ),
     );
   }

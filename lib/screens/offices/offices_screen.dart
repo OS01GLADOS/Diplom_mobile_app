@@ -1,4 +1,5 @@
 import 'package:diplom_mobile_app/core/constants/color_constants.dart';
+import 'package:diplom_mobile_app/core/widgets/loading_screen.dart';
 import 'package:diplom_mobile_app/core/widgets/main_navigation_drawer.dart';
 import 'package:diplom_mobile_app/utils/locations/locations.dart';
 import 'package:diplom_mobile_app/utils/locations/locations_schema.dart';
@@ -20,6 +21,7 @@ class OfficesScreen extends StatefulWidget{
 
 class OfficesScreenState extends State<OfficesScreen> {
 
+  bool is_loading = false;
   String title = "Офисы";
 
   Future<List<LocationsOfficeSchema>> _fetchLocations() async {
@@ -27,7 +29,18 @@ class OfficesScreenState extends State<OfficesScreen> {
     // Например, вызов функции get_locations_with_offices()
     return get_locations_with_offices();
   }
+  refresh_list() async {
+    setState(() {
+      is_loading =true;
+    });
+    // Здесь вызывается метод для обновления данных
+    // Например, можно использовать setState для изменения состояния экрана
+    await _fetchLocations();
+    setState(() {
+      is_loading = false;
+    });
 
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,33 +61,33 @@ class OfficesScreenState extends State<OfficesScreen> {
         ],
       ),
       drawer: MainNavigationDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // Здесь вызывается метод для обновления данных
-          // Например, можно использовать setState для изменения состояния экрана
-          await _fetchLocations();
-          setState(() {});
-        },
-        child: Center(
-          child:  FutureBuilder<List<LocationsOfficeSchema>>(
-            future: _fetchLocations(),
-
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Text('An error has occurred!'),
-                );
-              } else if (snapshot.hasData) {
-                return LocationsOfficeList(locationsOffice: snapshot.data!);
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-        ),
-      ),
+      body:
+          Stack(
+            children: [
+              if(!is_loading)
+              Center(
+                child:  FutureBuilder<List<LocationsOfficeSchema>>(
+                  future: _fetchLocations(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('An error has occurred!'),
+                      );
+                    } else if (snapshot.hasData) {
+                      return LocationsOfficeList(
+                        locationsOffice: snapshot.data!,
+                        callback: refresh_list,
+                      );
+                    } else {
+                      return LoadingScreen();
+                    }
+                  },
+                ),
+              ),
+              if(is_loading)
+                LoadingScreen()
+            ],
+          )
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:diplom_mobile_app/core/widgets/confirm_delete.dart';
+import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
 import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
 import 'package:diplom_mobile_app/utils/offices/offices.dart';
 import 'package:flutter/material.dart';
@@ -43,12 +44,19 @@ class OfficesList extends StatelessWidget {
                             bool confirm = await confirmDelete(context);
                             if (confirm) {
                               await deleteOffice(offices[index].id);
-                              //await deleteLocation(locationsOffice[index].id);
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                 content: Text('Успешно удалено'),
                                 duration: Duration(seconds: 2),
                               ));
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OfficesScreen.without_screen_title(
+                                  ),
+                                ),
+                              );
                             }
                           } on BadRequestException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
