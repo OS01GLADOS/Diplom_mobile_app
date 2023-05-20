@@ -1,5 +1,5 @@
-import 'package:diplom_mobile_app/utils/floors/floor_schema.dart';
-import 'package:diplom_mobile_app/utils/floors/get_office_floors.dart';
+import 'package:deskFinder/utils/floors/floor_schema.dart';
+import 'package:deskFinder/utils/floors/get_office_floors.dart';
 import 'package:flutter/material.dart';
 
 import 'floor_detail.dart';

@@ -1,0 +1,1 @@
+final int PASSWORD_LEN = 4;

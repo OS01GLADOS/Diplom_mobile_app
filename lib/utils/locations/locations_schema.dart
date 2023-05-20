@@ -1,4 +1,4 @@
-import 'package:diplom_mobile_app/utils/offices/offices_schema.dart';
+import 'package:deskFinder/utils/offices/offices_schema.dart';
 
 class LocationsSchema {
   final int id;

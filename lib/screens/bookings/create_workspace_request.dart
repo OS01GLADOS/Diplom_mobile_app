@@ -1,9 +1,9 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/button_style.dart';
-import 'package:diplom_mobile_app/core/widgets/input_frame.dart';
-import 'package:diplom_mobile_app/utils/booking/change_booking_time.dart';
-import 'package:diplom_mobile_app/utils/booking/create_booking_request.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/button_style.dart';
+import 'package:deskFinder/core/widgets/input_frame.dart';
+import 'package:deskFinder/utils/booking/change_booking_time.dart';
+import 'package:deskFinder/utils/booking/create_booking_request.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 import 'package:flutter/material.dart';
 
 class BookingCreateWidget extends StatefulWidget {

@@ -1,12 +1,12 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/utils/booking/booking_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/utils/booking/booking_schema.dart';
 import 'package:flutter/material.dart';
 
 class BookingItemWidget extends StatelessWidget {
   final Booking booking;
-  final bool is_mine = true;
+  bool is_mine = true;
 
-  BookingItemWidget({Key? key, required this.booking}) : super(key: key);
+  BookingItemWidget({Key? key, required this.booking, required this.is_mine}) : super(key: key);
 
   String format_date(DateTime date) {
     return "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}";

@@ -1,8 +1,8 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/input_widget.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
-import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
-import 'package:diplom_mobile_app/utils/locations/locations.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/input_widget.dart';
+import 'package:deskFinder/screens/offices/offices_screen.dart';
+import 'package:deskFinder/utils/http/http_exceptions.dart';
+import 'package:deskFinder/utils/locations/locations.dart';
 import 'package:flutter/material.dart';
 
 class CreateLocationWidget extends StatefulWidget {

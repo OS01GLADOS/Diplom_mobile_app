@@ -1,5 +1,5 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/utils/locations/locations_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/utils/locations/locations_schema.dart';
 import 'package:flutter/material.dart';
 
 import '../offices_list.dart';

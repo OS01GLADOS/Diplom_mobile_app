@@ -1,4 +1,4 @@
-import 'package:diplom_mobile_app/screens/auth/login_screen.dart';
+import 'package:deskFinder/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'core/constants/color_constants.dart';

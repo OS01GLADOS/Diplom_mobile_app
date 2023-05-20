@@ -1,6 +1,6 @@
-import 'package:diplom_mobile_app/core/constants/workspace_size.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/get_workspace_color.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/core/constants/workspace_size.dart';
+import 'package:deskFinder/utils/floors/workspaces/get_workspace_color.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 import 'package:flutter/material.dart';
 
 class WorkspaceContainer extends StatefulWidget {

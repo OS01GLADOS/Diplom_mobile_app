@@ -1,10 +1,12 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/screens/auth/login_screen.dart';
-import 'package:diplom_mobile_app/screens/bookings/bookings_screen.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
-import 'package:diplom_mobile_app/utils/auth/auth.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles_schema.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/screens/auth/login_screen.dart';
+import 'package:deskFinder/screens/bookings/bookings_screen.dart';
+import 'package:deskFinder/screens/offices/offices_screen.dart';
+import 'package:deskFinder/utils/auth/auth.dart';
+import 'package:deskFinder/utils/retrieve_roles/is_admin.dart';
+import 'package:deskFinder/utils/retrieve_roles/is_manager.dart';
+import 'package:deskFinder/utils/retrieve_roles/retrieve_roles_schema.dart';
+import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigationDrawer extends StatefulWidget{
@@ -17,12 +19,18 @@ class MainNavigationDrawer extends StatefulWidget{
 
 class MainNavigationDrawerState extends State<MainNavigationDrawer> {
 
+
+  bool is_manager_here = false;
+  bool is_admin_here = false;
+
   @override
   initState() {
     super.initState();
     ()async{
       RetrieveRoles user = await get_user();
       setState(() {
+        is_manager_here = is_manager(user.permissions);
+        is_admin_here = is_admin(user.permissions);
         employee_name = user.person.preferred_name;
         employee_role = user.person.department;
       });
@@ -58,10 +66,29 @@ class MainNavigationDrawerState extends State<MainNavigationDrawer> {
           children: [
             Padding(
               padding: EdgeInsets.only(bottom: 20.0),
-              child: Text(
-                employee_name,
-                style: TextStyle(
-                    color: ColorConstants.whiteBackground, fontSize: 20),
+              child:
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (is_admin_here)
+                    Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(
+                        Icons.diamond_outlined,
+                        size: 20,
+                        color: Colors.orangeAccent,
+                      ),
+                    ),
+                  Flexible(
+                    child: Text(
+                      employee_name,
+                      style: TextStyle(
+                          color: ColorConstants.whiteBackground,
+                          fontSize: 20),
+                    ),
+                  ),
+
+                ],
               ),
             ),
             Text(
@@ -126,8 +153,11 @@ class MainNavigationDrawerState extends State<MainNavigationDrawer> {
               ),
               onTap: () async {
                 await logout();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (Route<dynamic> route) => false
+                );
               },
             ),
           ],

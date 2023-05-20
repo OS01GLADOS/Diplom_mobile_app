@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import "package:collection/collection.dart";
-import 'package:diplom_mobile_app/core/constants/host_name.dart';
-import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
-import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
-import 'package:diplom_mobile_app/utils/locations/rus_to_translit.dart';
-import 'package:diplom_mobile_app/utils/offices/offices.dart';
-import 'package:diplom_mobile_app/utils/offices/offices_schema.dart';
+import 'package:deskFinder/core/constants/host_name.dart';
+import 'package:deskFinder/utils/auth/jwt_storage.dart';
+import 'package:deskFinder/utils/http/http_exceptions.dart';
+import 'package:deskFinder/utils/locations/rus_to_translit.dart';
+import 'package:deskFinder/utils/offices/offices.dart';
+import 'package:deskFinder/utils/offices/offices_schema.dart';
 import 'package:http/http.dart' as http;
 
 import 'locations_schema.dart';

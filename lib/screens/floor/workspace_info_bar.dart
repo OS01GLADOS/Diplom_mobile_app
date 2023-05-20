@@ -1,13 +1,20 @@
-import 'package:diplom_mobile_app/utils/floors/workspaces/rotate_workspace.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/utils/floors/workspaces/rotate_workspace.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WorkspaceInfoBar extends StatefulWidget {
+  final bool canUpdate;
+
   final Workspace workspace;
   final WebSocketChannel webSocketChannel;
 
-  const WorkspaceInfoBar({Key? key, required this.workspace, required this.webSocketChannel})
+  const WorkspaceInfoBar(
+      {Key? key,
+        required this.workspace,
+        required this.webSocketChannel,
+        required this.canUpdate
+      })
       : super(key: key);
 
   @override
@@ -41,6 +48,7 @@ class _WorkspaceInfoBarState extends State<WorkspaceInfoBar> {
         child:
         Column(
           children: [
+            if(widget.canUpdate)
             Row(
               children: [
                 IconButton(
@@ -61,7 +69,6 @@ class _WorkspaceInfoBarState extends State<WorkspaceInfoBar> {
                 ),
               ],
             ),
-
 
             Text('Статус: ${widget.workspace.translateWorkspaceStatus()}'),
             if(widget.workspace.employee != null)

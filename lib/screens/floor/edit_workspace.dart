@@ -1,9 +1,9 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/button_style.dart';
-import 'package:diplom_mobile_app/core/widgets/input_frame.dart';
-import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/event_handler.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/button_style.dart';
+import 'package:deskFinder/core/widgets/input_frame.dart';
+import 'package:deskFinder/utils/employees/employee_schema.dart';
+import 'package:deskFinder/utils/floors/workspaces/event_handler.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/constants/host_name.dart';
-import 'package:diplom_mobile_app/screens/bookings/create_workspace_request.dart';
-import 'package:diplom_mobile_app/screens/floor/custom_stack.dart';
-import 'package:diplom_mobile_app/screens/floor/workspace.dart';
-import 'package:diplom_mobile_app/screens/floor/workspace_info_bar.dart';
-import 'package:diplom_mobile_app/utils/floors/plan/retrieve_plan.dart';
-import 'package:diplom_mobile_app/utils/floors/plan/rooms_schema.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/check_overlap.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles_schema.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/constants/host_name.dart';
+import 'package:deskFinder/screens/bookings/create_workspace_request.dart';
+import 'package:deskFinder/screens/floor/custom_stack.dart';
+import 'package:deskFinder/screens/floor/workspace.dart';
+import 'package:deskFinder/screens/floor/workspace_info_bar.dart';
+import 'package:deskFinder/utils/floors/plan/retrieve_plan.dart';
+import 'package:deskFinder/utils/floors/plan/rooms_schema.dart';
+import 'package:deskFinder/utils/floors/workspaces/check_overlap.dart';
+import 'package:deskFinder/utils/retrieve_roles/retrieve_roles_schema.dart';
+import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:web_socket_channel/io.dart';
@@ -25,8 +25,9 @@ import 'edit_workspace.dart';
 
 class ShowFloorPlan extends StatefulWidget {
   final int floorId;
+  final bool canUpdate;
 
-  ShowFloorPlan({Key? key, required this.floorId}): super(key: key);
+  ShowFloorPlan({Key? key, required this.floorId, required this.canUpdate}): super(key: key);
 
   @override
   ShowFloorPlanState createState() => ShowFloorPlanState();
@@ -34,7 +35,7 @@ class ShowFloorPlan extends StatefulWidget {
 
 class ShowFloorPlanState extends State<ShowFloorPlan> {
 
-  bool is_manager = false;
+  bool isPlanLoaded = false;
 
   late Future<List<Room>> _future;
   List<Room> _rooms = [];
@@ -69,13 +70,6 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
   @override
   void initState() {
     super.initState();
-
-    ()async{
-      RetrieveRoles user = await get_user();
-      setState(() {
-        is_manager = user.permissions.contains("WORKSPACE-REQUEST_APPROVE");
-      });
-    }();
 
     _future = get_floor_rooms(widget.floorId).then((value) => _rooms = value);
     get_token().then((token) {
@@ -132,6 +126,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
     return
       Stack(
         children: [
+
         SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: SingleChildScrollView(
@@ -149,47 +144,83 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasData) {
-                          return Stack(
-                            fit: StackFit.loose,
-                            children: _rooms.map((room) {
-                              return Positioned(
-                                left: room.containerCoordinates[0][0],
-                                top: room.containerCoordinates[0][1],
-                                child: GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: Text(room.number),
-                                        ),
-                                      );
-                                    },
-                                    child:
-                                    DragTarget<Workspace>(
-                                      builder: (BuildContext context, List<Workspace?> candidateData, List<dynamic> rejectedData){
-                                        return Stack(
-                                          fit: StackFit.loose,
-                                          children: [
-                                            SvgPicture.network(room.layout),
-                                            Positioned.fill(
-                                              child: Center(
-                                                child: Text(
-                                                  room.number,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                          if(snapshot.data!.isEmpty){
+                            print(snapshot.data);
+                            print(snapshot.data!.isEmpty);
+                            return
+                            Padding(padding: EdgeInsets.only(top: 40, left: 20),child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.map_outlined,
+                                  size: 40,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'План этажа не загружен',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if(widget.canUpdate)
+                            Text(
+                              'Нажмите на кнопку справа вверху\nдля загрузки плана',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 20,
+                              )
+                            )
+                              ],
+                            ));
+                          }
+                          else{
+                            isPlanLoaded = true;
+                            return Stack(
+                              fit: StackFit.loose,
+                              children: _rooms.map((room) {
+                                return Positioned(
+                                  left: room.containerCoordinates[0][0],
+                                  top: room.containerCoordinates[0][1],
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text(room.number),
+                                          ),
                                         );
                                       },
-                                      onAccept: (Workspace? data) {
-                                        room_id = room.id;
-                                      },
-                                    )
-                                ),
-                              );
-                            }).toList(),
-                          );
+                                      child:
+                                      DragTarget<Workspace>(
+                                        builder: (BuildContext context, List<Workspace?> candidateData, List<dynamic> rejectedData){
+                                          return Stack(
+                                            fit: StackFit.loose,
+                                            children: [
+                                              SvgPicture.network(room.layout),
+                                              Positioned.fill(
+                                                child: Center(
+                                                  child: Text(
+                                                    room.number,
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                        onAccept: (Workspace? data) {
+                                          room_id = room.id;
+                                        },
+                                      )
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          }
+
                         } else {
                           return Center(child: Text('Error: ${snapshot.error}'));
                         }
@@ -228,7 +259,8 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                               child:
                                               InkWell(
                                                 onLongPress: () {
-                                                  // показываем меню при долгом нажатии на элемент
+                                                  if(!widget.canUpdate && (workspace.status == "Booked"||workspace.status == "Free"))
+                                                    // показываем меню при долгом нажатии на элемент
                                                   showModalBottomSheet(
                                                     context: context,
                                                     builder: (BuildContext context) {
@@ -246,7 +278,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                                               textAlign: TextAlign.center, // центрируем текст
                                                             ),
                                                           ),
-                                                          //if (is_manager)
+                                                          if (widget.canUpdate)
                                                           //изменить место
                                                           ListTile(
                                                             leading: Icon(Icons.edit),
@@ -256,7 +288,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                                                   MaterialPageRoute(builder: (context) => EditWorkspaceScreen(workspace: workspace, webSocketChannel: _webSocketChannel,)));
                                                             },
                                                           ),
-                                                          //if (is_manager)
+                                                          if (widget.canUpdate)
                                                           //удалить место
                                                           ListTile(
                                                             leading: Icon(Icons.clear),
@@ -280,7 +312,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                                               }
                                                             },
                                                           ),
-                                                          //if (!is_manager)
+                                                          if (!widget.canUpdate)
                                                           //забронировать место
                                                           ListTile(
                                                               leading: Icon(Icons.add),
@@ -305,6 +337,12 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                                 child: WorkspaceContainer(workspace:workspace),),
                                               childWhenDragging: Container(),
                                               onDragEnd: (details) {
+                                                if (!widget.canUpdate){
+                                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                    content: Text('У вас нед разрешений на это действие'),
+                                                  ));
+                                                  return;
+                                                }
                                                 if (details.wasAccepted){
                                                   final RenderBox? box =
                                                   _key.currentContext?.findRenderObject() as RenderBox?;
@@ -346,7 +384,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                             ),
                                           ),
                                         ],
-                                        background:WorkspaceInfoBar(workspace:workspace, webSocketChannel: _webSocketChannel,),
+                                        background:WorkspaceInfoBar(workspace:workspace, webSocketChannel: _webSocketChannel, canUpdate: widget.canUpdate,),
                                       )
 
                                 ),
@@ -362,6 +400,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                 ))),
       ),
           //!!! button that adds workspace
+          if (widget.canUpdate)
           Positioned(
             bottom: 16.0,
             right: 16.0,

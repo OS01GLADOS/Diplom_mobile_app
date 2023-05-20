@@ -20,53 +20,33 @@ class OfficeStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.55,
-          child: Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildStatsRow(
-                  title: 'Занято мест',
-                  value: numberOfOccupiedWorkspaces.toString(),
-                  color: Colors.redAccent,
-                ),
-                _buildStatsRow(
-                  title: 'Забронировано мест',
-                  value: numberOfBookedWorkspaces.toString(),
-                  color: Colors.amber,
-                ),
-                _buildStatsRow(
-                  title: 'Зарезервировано мест',
-                  value: numberOfReservedWorkspaces.toString(),
-                  color: Colors.deepPurpleAccent,
-                ),
-                _buildStatsRow(
-                  title: 'Свободно мест',
-                  value: numberOfFreeWorkspaces.toString(),
-                  color: Colors.greenAccent,
-                ),
-                _buildStatsRow(
-                  title: 'виртуальные места',
-                  value: numberOfRemoteWorkspaces.toString(),
-                  color: Colors.blueAccent,
-                ),
-              ],
-            ),
-          ),
+        _buildStatsRow(
+          title: 'Занято мест',
+          value: numberOfOccupiedWorkspaces.toString(),
+          color: Colors.redAccent,
         ),
-        Container(
-          width: 140,
-          height: 140,
-          child: DonutChart(
-            bookedPercent: 0,
-            reservedPercent: 0,
-            occupiedPercent: 50,
-            freePercent: 25,
-            remotePercent: 25,
-          ),
+        _buildStatsRow(
+          title: 'Забронировано мест',
+          value: numberOfBookedWorkspaces.toString(),
+          color: Colors.amber,
+        ),
+        _buildStatsRow(
+          title: 'Зарезервировано мест',
+          value: numberOfReservedWorkspaces.toString(),
+          color: Colors.deepPurpleAccent,
+        ),
+        _buildStatsRow(
+          title: 'Свободно мест',
+          value: numberOfFreeWorkspaces.toString(),
+          color: Colors.greenAccent,
+        ),
+        _buildStatsRow(
+          title: 'виртуальные места',
+          value: numberOfRemoteWorkspaces.toString(),
+          color: Colors.blueAccent,
         ),
       ],
     );

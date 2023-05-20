@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:diplom_mobile_app/core/constants/host_name.dart';
-import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
-import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
+import 'package:deskFinder/core/constants/host_name.dart';
+import 'package:deskFinder/utils/auth/jwt_storage.dart';
+import 'package:deskFinder/utils/http/http_exceptions.dart';
+import 'package:deskFinder/utils/retrieve_roles/retrieve_roles.dart';
+import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'auth_schema.dart';

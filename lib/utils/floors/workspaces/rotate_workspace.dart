@@ -1,4 +1,4 @@
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 rotate_workspace(int rotation, Workspace workspace, WebSocketChannel ws_channel){

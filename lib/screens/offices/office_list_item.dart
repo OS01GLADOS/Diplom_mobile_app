@@ -1,6 +1,6 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/screens/offices/small_office_statistic.dart';
-import 'package:diplom_mobile_app/utils/offices/offices_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/screens/offices/small_office_statistic.dart';
+import 'package:deskFinder/utils/offices/offices_schema.dart';
 import 'package:flutter/material.dart';
 
 class OfficesListItem extends StatelessWidget {

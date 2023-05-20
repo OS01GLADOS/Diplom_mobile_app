@@ -1,12 +1,13 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/confirm_action.dart';
-import 'package:diplom_mobile_app/core/widgets/loading_screen.dart';
-import 'package:diplom_mobile_app/screens/floor/show_plan.dart';
-import 'package:diplom_mobile_app/screens/offices/office_detail/office_detail.dart';
-import 'package:diplom_mobile_app/utils/floors/floor_schema.dart';
-import 'package:diplom_mobile_app/utils/floors/plan/upload_new_plan.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/retrieve_roles_schema.dart';
-import 'package:diplom_mobile_app/utils/retrieve_roles/user_storage.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/confirm_action.dart';
+import 'package:deskFinder/core/widgets/loading_screen.dart';
+import 'package:deskFinder/screens/floor/show_plan.dart';
+import 'package:deskFinder/screens/offices/office_detail/office_detail.dart';
+import 'package:deskFinder/utils/floors/floor_schema.dart';
+import 'package:deskFinder/utils/floors/plan/upload_new_plan.dart';
+import 'package:deskFinder/utils/retrieve_roles/is_allowed_location.dart';
+import 'package:deskFinder/utils/retrieve_roles/retrieve_roles_schema.dart';
+import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
 
 class FloorDetailWidget extends StatefulWidget {
@@ -20,7 +21,7 @@ class FloorDetailWidget extends StatefulWidget {
 }
 
 class FloorDetailState extends State<FloorDetailWidget> {
-  bool is_manager = false;
+  bool canUpdate = false;
   bool is_loading = false;
 
   @override
@@ -30,7 +31,7 @@ class FloorDetailState extends State<FloorDetailWidget> {
     () async {
       RetrieveRoles user = await get_user();
       setState(() {
-        is_manager = user.permissions.contains("WORKSPACE-REQUEST_APPROVE");
+        canUpdate = is_allowed_location(user.allowed_locations,widget.officeId);
       });
     }();
   }
@@ -56,7 +57,7 @@ class FloorDetailState extends State<FloorDetailWidget> {
               backgroundColor: ColorConstants.lightGreen,
               title: Text(widget.floor.toString()),
               actions: [
-                if (is_manager)
+                if(canUpdate)
                   IconButton(
                     icon: Icon(Icons.add),
                     tooltip: 'Загрузить план этажа',
@@ -96,6 +97,7 @@ class FloorDetailState extends State<FloorDetailWidget> {
                 Container(
                   child: ShowFloorPlan(
                     floorId: widget.floor.id,
+                    canUpdate: canUpdate,
                   ),
                 ),
                 if (is_loading)

@@ -1,4 +1,4 @@
-import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
+import 'package:deskFinder/utils/employees/employee_schema.dart';
 
 class Office {
   int id;

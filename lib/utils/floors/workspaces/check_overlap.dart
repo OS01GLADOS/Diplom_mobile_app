@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:diplom_mobile_app/core/constants/workspace_size.dart';
-import 'package:diplom_mobile_app/utils/floors/workspaces/workspace_schema.dart';
+import 'package:deskFinder/core/constants/workspace_size.dart';
+import 'package:deskFinder/utils/floors/workspaces/workspace_schema.dart';
 
 bool checkOverlap(int id, double x, double y, List<Workspace> workspaces, [int rotate_degree = 0]) {
   for (final w in workspaces) {

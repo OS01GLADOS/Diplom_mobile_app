@@ -1,12 +1,12 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/loading_screen.dart';
-import 'package:diplom_mobile_app/screens/floor/office_floor_list.dart';
-import 'package:diplom_mobile_app/screens/offices/office_detail/office_stat_widget.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
-import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
-import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
-import 'package:diplom_mobile_app/utils/offices/get_office_detail.dart';
-import 'package:diplom_mobile_app/utils/offices/get_office_schema.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/loading_screen.dart';
+import 'package:deskFinder/screens/floor/office_floor_list.dart';
+import 'package:deskFinder/screens/offices/office_detail/office_stat_widget.dart';
+import 'package:deskFinder/screens/offices/offices_screen.dart';
+import 'package:deskFinder/utils/auth/jwt_storage.dart';
+import 'package:deskFinder/utils/employees/employee_schema.dart';
+import 'package:deskFinder/utils/offices/get_office_detail.dart';
+import 'package:deskFinder/utils/offices/get_office_schema.dart';
 import 'package:flutter/material.dart';
 
 

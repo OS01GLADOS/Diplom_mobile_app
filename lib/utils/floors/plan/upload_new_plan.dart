@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:diplom_mobile_app/core/constants/host_name.dart';
-import 'package:diplom_mobile_app/utils/auth/jwt_storage.dart';
+import 'package:deskFinder/core/constants/host_name.dart';
+import 'package:deskFinder/utils/auth/jwt_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 

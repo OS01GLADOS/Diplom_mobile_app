@@ -1,15 +1,18 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/button_style.dart';
-import 'package:diplom_mobile_app/core/widgets/input_frame.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
-import 'package:diplom_mobile_app/utils/employees/employee_schema.dart';
-import 'package:diplom_mobile_app/utils/employees/employees.dart';
-import 'package:diplom_mobile_app/utils/floors/get_office_floors.dart';
-import 'package:diplom_mobile_app/utils/locations/locations.dart';
-import 'package:diplom_mobile_app/utils/locations/locations_schema.dart';
-import 'package:diplom_mobile_app/utils/offices/get_office.dart';
-import 'package:diplom_mobile_app/utils/offices/get_office_schema.dart';
-import 'package:diplom_mobile_app/utils/offices/offices.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/widgets/button_style.dart';
+import 'package:deskFinder/core/widgets/input_frame.dart';
+import 'package:deskFinder/screens/offices/offices_screen.dart';
+import 'package:deskFinder/utils/employees/employee_schema.dart';
+import 'package:deskFinder/utils/employees/employees.dart';
+import 'package:deskFinder/utils/floors/get_office_floors.dart';
+import 'package:deskFinder/utils/locations/locations.dart';
+import 'package:deskFinder/utils/locations/locations_schema.dart';
+import 'package:deskFinder/utils/offices/get_office.dart';
+import 'package:deskFinder/utils/offices/get_office_schema.dart';
+import 'package:deskFinder/utils/offices/offices.dart';
+import 'package:deskFinder/utils/retrieve_roles/is_admin.dart';
+import 'package:deskFinder/utils/retrieve_roles/retrieve_roles_schema.dart';
+import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
 import 'package:flutter/material.dart';
 
 
@@ -27,6 +30,8 @@ class OfficeUpdateCreate extends StatefulWidget {
 
 class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
 
+  bool is_owner = false;
+  bool is_admin_here = false;
   bool is_update = false;
   List<int> _floor_list = [];
   List<TextEditingController> _floor_controllers = [];
@@ -63,11 +68,12 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
   @override
   void initState() {
     super.initState();
-
         ()async{
+          RetrieveRoles user = await get_user();
           var locations = await get_all_locations();
           var employees = await get_all_employees();
           setState(() {
+            is_admin_here = is_admin(user.permissions);
             _locations = locations;
             _owners = employees;
           });
@@ -77,7 +83,6 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
             var floor_list = floors.map((e) => e.number).toList();
 
             Office office = await get_office(widget.office_id!);
-
             setState(() {
               _floor_list = floor_list;
               title = "Изменить офис";
@@ -108,6 +113,9 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
               }
             });
           }
+          setState(() {
+            is_owner = user.person.id == _selectedOwnerId;
+          });
           is_ready = true;
           for (int i = 0; i < _floor_list.length; i++) {
             _floor_controllers.add(TextEditingController(text: _floor_list[i].toString()));
@@ -177,6 +185,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    if(is_admin_here)
                     InputFrameWidget(
                       'Адрес',
                       TextFormField(
@@ -189,6 +198,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                         controller: _addressController,
                       ),
                     ),
+                    if(is_admin_here)
                     InputFrameWidget(
                       'Индекс',
                       TextFormField(
@@ -201,9 +211,11 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                         controller: _postcodeController,
                       ),
                     ),
+                    if(is_admin_here)
                     InputFrameWidget(
                       'Владелец офиса',
                       DropdownButtonFormField<int>(
+                        iconSize: 0,
                         value: _selectedOwnerId,
                         items: _owners.map((owner) {
                           return DropdownMenuItem<int>(
@@ -224,12 +236,13 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                         },
                       ),
                     ),
-
+                    if(is_admin_here || is_owner)
                     InputFrameWidget(
                       'Менеджеры',
                       Column(
                         children: [
                           DropdownButtonFormField<int>(
+                            iconSize: 0,
                             value: _selectedManager1Id,
                             items: [
                               ..._owners.map((owner) {
@@ -251,6 +264,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                             validator: null,
                           ),
                           DropdownButtonFormField<int>(
+                            iconSize: 0,
                             value: _selectedManager2Id,
                             items: [
                               ..._owners.map((owner) {
@@ -272,6 +286,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
                             validator: null,
                           ),
                           DropdownButtonFormField<int>(
+                            iconSize: 0,
                             value: _selectedManager3Id,
                             items: [
                               ..._owners.map((owner) {
@@ -338,7 +353,7 @@ class _OfficeUpdateCreateState extends State<OfficeUpdateCreate> {
 
 
                     ),
-
+                    if(is_admin_here)
                     InputFrameWidget(
                       'Местоположение',
                       DropdownButtonFormField<int>(

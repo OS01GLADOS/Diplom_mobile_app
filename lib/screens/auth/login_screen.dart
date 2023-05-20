@@ -1,10 +1,12 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
-import 'package:diplom_mobile_app/core/widgets/button_style.dart';
-import 'package:diplom_mobile_app/core/widgets/input_widget.dart';
-import 'package:diplom_mobile_app/screens/auth/register_screen.dart';
-import 'package:diplom_mobile_app/screens/offices/offices_screen.dart';
-import 'package:diplom_mobile_app/utils/auth/auth.dart';
-import 'package:diplom_mobile_app/utils/http/http_exceptions.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/core/constants/password_length.dart';
+import 'package:deskFinder/core/widgets/button_style.dart';
+import 'package:deskFinder/core/widgets/input_frame.dart';
+import 'package:deskFinder/core/widgets/input_widget.dart';
+import 'package:deskFinder/screens/auth/register_screen.dart';
+import 'package:deskFinder/screens/offices/offices_screen.dart';
+import 'package:deskFinder/utils/auth/auth.dart';
+import 'package:deskFinder/utils/http/http_exceptions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -43,8 +45,36 @@ class LoginScreenState extends State<LoginScreen> {
                   fontSize: 30,
               ),
             ),
-            InputWidget('Логин', loginController),
-            InputWidget('Пароль', passwordController, 'password'),
+            InputFrameWidget(
+              'Логин',
+              TextFormField(
+                controller: loginController,
+                validator: (value) {
+                  final loginRegExp = RegExp(r"^[a-zA-Z0-9_]+$");
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите логин';
+                  } else if (!loginRegExp.hasMatch(value)) {
+                    return 'Логин должен содержать только буквы и цифры';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            InputFrameWidget(
+              'Пароль',
+              TextFormField(
+                controller: passwordController,
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите пароль';
+                  } else if (value.length < PASSWORD_LEN) {
+                    return 'Пароль должен быть не менее $PASSWORD_LEN символов';
+                  }
+                  return null;
+                },
+              ),
+            ),
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
               child:  ElevatedButton(

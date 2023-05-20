@@ -1,4 +1,4 @@
-import 'package:diplom_mobile_app/core/constants/color_constants.dart';
+import 'package:deskFinder/core/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
 
