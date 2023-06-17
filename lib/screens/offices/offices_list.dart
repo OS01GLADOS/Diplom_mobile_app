@@ -25,7 +25,7 @@ class OfficesList extends StatefulWidget{
 class OfficesListState extends State<OfficesList> {
 
   bool is_admin_here = false;
-  Map? allowed_locations;
+  var allowed_locations;
 
   @override
   initState() {
@@ -35,7 +35,7 @@ class OfficesListState extends State<OfficesList> {
       print(user.allowed_locations);
       setState(() {
         is_admin_here = is_admin(user.permissions);
-        allowed_locations = user.allowed_locations;
+        allowed_locations = user;
       });
     }();
 

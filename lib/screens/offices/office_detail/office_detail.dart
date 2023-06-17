@@ -9,7 +9,6 @@ import 'package:deskFinder/utils/offices/get_office_detail.dart';
 import 'package:deskFinder/utils/offices/get_office_schema.dart';
 import 'package:flutter/material.dart';
 
-
 class OfficeDetailScreen extends StatefulWidget {
   final int officeId;
 
@@ -106,23 +105,13 @@ class _OfficeDetailScreenState extends State<OfficeDetailScreen>  {
                       ),
                       Divider(thickness: 1.0),
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Статистика',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: OfficeStatsWidget(
                             numberOfReservedWorkspaces: numberOfReservedWorkspaces,
                             numberOfBookedWorkspaces: numberOfBookedWorkspaces,
                             numberOfOccupiedWorkspaces: numberOfOccupiedWorkspaces,
                             numberOfFreeWorkspaces: numberOfFreeWorkspaces,
-                            numberOfRemoteWorkspaces: numberOfRemoteWorkspaces),
+                            numberOfRemoteWorkspaces: numberOfRemoteWorkspaces)
                       ),
                       Divider(thickness: 1.0),
                       if(_managersList.isNotEmpty || _owner != null)

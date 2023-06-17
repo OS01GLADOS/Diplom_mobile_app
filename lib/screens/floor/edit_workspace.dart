@@ -26,9 +26,7 @@ class _EditWorkspaceScreenState extends State<EditWorkspaceScreen> {
   List<Map<String, dynamic>> statusList = [
     {'id': 0, 'status': 'Free', 'status_rus': 'свободно'},
     {'id': 1, 'status': 'Reserved', 'status_rus': 'зарезервировано'},
-    {'id': 2, 'status': 'Booked', 'status_rus': 'забронировано'},
     {'id': 3, 'status': 'Occupied', 'status_rus': 'занято'},
-    {'id': 4, 'status': 'Remote', 'status_rus': 'виртуальное'},
   ];
 
   int getStatusId(String statusName) {
@@ -93,6 +91,7 @@ class _EditWorkspaceScreenState extends State<EditWorkspaceScreen> {
                     InputFrameWidget(
                       'Сотрудник',
                       DropdownButtonFormField<int>(
+                        iconSize: 0,
                         value: _selectedEmployeeId,
                         items: _employees.map((employee) {
                           return DropdownMenuItem<int>(

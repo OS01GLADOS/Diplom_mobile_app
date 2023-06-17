@@ -9,6 +9,7 @@ import 'package:deskFinder/screens/floor/workspace.dart';
 import 'package:deskFinder/screens/floor/workspace_info_bar.dart';
 import 'package:deskFinder/utils/floors/plan/retrieve_plan.dart';
 import 'package:deskFinder/utils/floors/plan/rooms_schema.dart';
+import 'package:deskFinder/utils/floors/plan/stairs_schema.dart';
 import 'package:deskFinder/utils/floors/workspaces/check_overlap.dart';
 import 'package:deskFinder/utils/retrieve_roles/retrieve_roles_schema.dart';
 import 'package:deskFinder/utils/retrieve_roles/user_storage.dart';
@@ -38,7 +39,10 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
   bool isPlanLoaded = false;
 
   late Future<List<Room>> _future;
+  late Future<List<Stair>> _futureStairs;
   List<Room> _rooms = [];
+  List<Stair> _stairs = [];
+
 
 
   Future<List<Workspace>> get_workspaces() async {
@@ -62,16 +66,16 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
      _webSocketChannel.sink.add('''{
           "event":"list"
           }''');
-     _future = get_floor_rooms(widget.floorId).then((value) => _rooms = value);
-
-
+     _futureStairs = get_floor_rooms(widget.floorId).then((value) => _stairs = value.stairs!);
+     _future = get_floor_rooms(widget.floorId).then((value) => _rooms = value.rooms!);
    }
 
   @override
   void initState() {
     super.initState();
 
-    _future = get_floor_rooms(widget.floorId).then((value) => _rooms = value);
+    _futureStairs = get_floor_rooms(widget.floorId).then((value) => _stairs = value.stairs!);
+    _future = get_floor_rooms(widget.floorId).then((value) => _rooms = value.rooms!);
     get_token().then((token) {
       var url = '$WEBSOCKET_URL/ws/floor/${widget.floorId}?token=$token';
       _webSocketChannel = IOWebSocketChannel.connect(url);
@@ -136,6 +140,65 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                 constraints: BoxConstraints(maxWidth: 10000, maxHeight: 10000),
                 child: Stack(
                   children: [
+                    // list of stairs
+                    FutureBuilder<List<Stair>>(
+                      future: _futureStairs,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Stair>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasData) {
+                          if(snapshot.data!.isEmpty){
+                            print(snapshot.data);
+                            print(snapshot.data!.isEmpty);
+                            return
+                              Padding(padding: EdgeInsets.only(top: 40, left: 20),child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.map_outlined,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'План этажа не загружен',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if(widget.canUpdate)
+                                    Text(
+                                        'Нажмите на кнопку справа вверху\nдля загрузки плана',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 20,
+                                        )
+                                    )
+                                ],
+                              ));
+                          }
+                          else{
+                            isPlanLoaded = true;
+                            return Stack(
+                              fit: StackFit.loose,
+                              children: _stairs.map((room) {
+                                return Positioned(
+                                  left: room.containerCoordinates[0][0],
+                                  top: room.containerCoordinates[0][1],
+                                  child: SvgPicture.network(room.layout),
+                                );
+                              }).toList(),
+                            );
+                          }
+
+                        } else {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
+                      },
+                    ),
                     // !!! show lists of all fooms on the plan
                     FutureBuilder<List<Room>>(
                       future: _future,
@@ -259,7 +322,8 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                               child:
                                               InkWell(
                                                 onLongPress: () {
-                                                  if(!widget.canUpdate && (workspace.status == "Booked"||workspace.status == "Free"))
+                                                  print(widget.canUpdate);
+                                                  if(widget.canUpdate || workspace.status == "Free" || workspace.status == "Booked")
                                                     // показываем меню при долгом нажатии на элемент
                                                   showModalBottomSheet(
                                                     context: context,
@@ -339,7 +403,7 @@ class ShowFloorPlanState extends State<ShowFloorPlan> {
                                               onDragEnd: (details) {
                                                 if (!widget.canUpdate){
                                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                    content: Text('У вас нед разрешений на это действие'),
+                                                    content: Text('У вас нет разрешений на это действие'),
                                                   ));
                                                   return;
                                                 }

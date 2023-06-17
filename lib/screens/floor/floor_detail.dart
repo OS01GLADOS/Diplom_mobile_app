@@ -31,7 +31,8 @@ class FloorDetailState extends State<FloorDetailWidget> {
     () async {
       RetrieveRoles user = await get_user();
       setState(() {
-        canUpdate = is_allowed_location(user.allowed_locations,widget.officeId);
+
+        canUpdate = is_allowed_location(user,widget.officeId);
       });
     }();
   }

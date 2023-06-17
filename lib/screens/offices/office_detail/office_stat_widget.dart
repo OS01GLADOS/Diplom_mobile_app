@@ -1,8 +1,17 @@
+import 'package:deskFinder/core/constants/color_constants.dart';
+import 'package:deskFinder/screens/offices/office_detail/office_detail_statistic_round.dart';
 import 'package:flutter/material.dart';
-
 import 'big_office_statistic.dart';
 
 class OfficeStatsWidget extends StatelessWidget {
+
+  double getPercent(int number){
+    if (number == 0 ) return 0.0;
+    var divisioner  = numberOfReservedWorkspaces+numberOfBookedWorkspaces+numberOfOccupiedWorkspaces+numberOfFreeWorkspaces+numberOfRemoteWorkspaces;
+    if (divisioner == 0) divisioner = 1;
+    return number / divisioner*100;
+  }
+
   final int numberOfReservedWorkspaces;
   final int numberOfBookedWorkspaces;
   final int numberOfOccupiedWorkspaces;
@@ -20,63 +29,96 @@ class OfficeStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildStatsRow(
-          title: 'Занято мест',
-          value: numberOfOccupiedWorkspaces.toString(),
-          color: Colors.redAccent,
-        ),
-        _buildStatsRow(
-          title: 'Забронировано мест',
-          value: numberOfBookedWorkspaces.toString(),
-          color: Colors.amber,
-        ),
-        _buildStatsRow(
-          title: 'Зарезервировано мест',
-          value: numberOfReservedWorkspaces.toString(),
-          color: Colors.deepPurpleAccent,
-        ),
-        _buildStatsRow(
-          title: 'Свободно мест',
-          value: numberOfFreeWorkspaces.toString(),
-          color: Colors.greenAccent,
-        ),
-        _buildStatsRow(
-          title: 'виртуальные места',
-          value: numberOfRemoteWorkspaces.toString(),
-          color: Colors.blueAccent,
-        ),
-      ],
-    );
+    return
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildStatsBox(
+            children: [
+              _buildStatsRow(
+                title: 'Свободно',
+                value: numberOfFreeWorkspaces.toString(),
+                color: ColorConstants.workspaceFreeColor,
+              ),
+              OfficeDetailStatisticRound(
+                fillValue: getPercent(numberOfFreeWorkspaces),
+                fillColor: ColorConstants.workspaceFreeColor,
+              )
+            ]
+          ),
+          _buildStatsBox(
+              children: [
+                _buildStatsRow(
+                  title: 'Занято',
+                  value: numberOfOccupiedWorkspaces.toString(),
+                  color: ColorConstants.workspaceOccupiedColor,
+                ),
+                OfficeDetailStatisticRound(
+                  fillValue: getPercent(numberOfOccupiedWorkspaces),
+                  fillColor: ColorConstants.workspaceOccupiedColor,
+                )
+              ]
+          ),
+          _buildStatsBox(
+              children: [
+                _buildStatsRow(
+                  title: 'Забронировано',
+                  value: numberOfBookedWorkspaces.toString(),
+                  color: ColorConstants.workspaceBookedColor,
+                ),
+                OfficeDetailStatisticRound(
+                  fillValue: getPercent(numberOfBookedWorkspaces),
+                  fillColor: ColorConstants.workspaceBookedColor,
+                )
+              ]
+          ),
+
+        ],
+      );
+
   }
+  Widget _buildStatsBox({
+    required List<Widget> children
+  }) {
+    return
+      Container(
+        width: 120,
+        height: 140,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: children
+        ),
+      );
+  }
+
+
 
   Widget _buildStatsRow({
     required String title,
     required String value,
     required Color color,
   }) {
-    return Row(
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            color: color,
+    return
+      Column(
+        children: [
+          Text(
+            "$title",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
-        ),
-        Spacer(),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    );
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          )
+        ],
+      )
+      ;
   }
 }
